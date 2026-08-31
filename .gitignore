@@ -1,0 +1,12 @@
+# 依赖与构建产物
+node_modules/
+dist/
+
+# 日志与临时文件
+*.log
+npm-debug.log*
+*.tsbuildinfo
+.DS_Store
+
+# 本地配置变体
+.vscode/*.local.json
