@@ -36,7 +36,9 @@ function Send-Status($ssl, $code, $reason) {
 }
 
 function Send-File($ssl, $requestPath) {
-    $rel = $requestPath.TrimStart('/')
+    # strip query string (e.g. Office appends ?_host_Info=...) and fragment
+    $path = $requestPath.Split('?')[0].Split('#')[0]
+    $rel = $path.TrimStart('/')
     $rel = [Uri]::UnescapeDataString($rel).Replace('/', '\')
     if ($rel -eq '' -or $rel -match '\.\.' -or $rel -match '^[A-Za-z]:') {
         Send-Status $ssl 404 'Not Found'
