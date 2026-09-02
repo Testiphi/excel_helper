@@ -1,44 +1,63 @@
-# Excel 交叉定位（Excel Locator Add-in）
+# Excel Cross-Locator
 
-Excel 任务窗格插件：通过**二维锚点搜索**快速定位并编辑单元格，专为多级表头、合并单元格、无规整表头的表格设计——无需依赖表头结构，输入任意两个文本分别锚定"行"与"列"，交叉点即目标单元格。
+An Excel task pane add-in that locates and edits cells via **2D anchor search** — designed for tables with multi-level headers, merged cells, or no regular header structure. No header detection needed: enter any two pieces of text to anchor a **row** and a **column**, and their intersection is your target cell.
 
-## 核心思路
+Excel 任务窗格插件：通过**二维锚点搜索**快速定位并编辑单元格。专为多级表头、合并单元格、无规整表头的表格设计——不依赖表头结构，输入任意两个文本分别锚定"行"与"列"，交叉点即目标单元格。
 
-- **行搜索**：输入文本 → 命中该文本的单元格所在行（命中合并区域时扩展至整个跨度）
-- **列搜索**：输入文本 → 命中该文本的单元格所在列
-- **交叉定位**：匹配行 × 匹配列 → 目标单元格网格（Excel 1-based 坐标），双击/Enter 编辑并写回
-- 多条件支持"且/或"组合收窄（如期中/期末双表头下的重复列名）
+## How it works / 工作原理
 
-## 技术栈
+- **Row search**: text → all rows containing it (merged regions expand to their full span)
+- **Column search**: text → all columns containing it
+- **Intersection**: matched rows × matched columns → target cell grid (Excel coordinates), double-click / Enter to edit and write back
+- **Multiple conditions** with AND/OR to narrow down (e.g. duplicate column names under repeated headers)
+- 行搜索：文本 → 命中该文本的所有行（合并区域自动扩展至整个跨度）
+- 列搜索：文本 → 命中该文本的所有列
+- 交叉定位：匹配行 × 匹配列 → 目标单元格网格（Excel 1-based 坐标），双击/Enter 编辑写回
+- 多条件"且/或"组合收窄（如重复表头下的同名列）
 
-- Office Add-in（Taskpane）+ Office.js
-- React 18 + TypeScript + Fluent UI v9（webpack 5）
+## Install / 安装（3 steps）
 
-## 目录结构
+> **Requirements**: Excel desktop (Microsoft 365 or 2021+) or Excel on the web. The add-in only reads/writes the active worksheet; all data stays in your browser's sandbox.
+>
+> **环境要求**：Excel 桌面版（Microsoft 365 或 2021+）或 Excel 网页版。插件只读写当前活动工作表，数据不出浏览器。
 
-```
-src/
-  types/      领域类型定义
-  services/   excelService（Office.js 读写）/ filterEngine（纯定位算法）
-  hooks/      数据加载与搜索状态管理
-  components/ 搜索面板、结果网格、编辑弹层等 UI
-```
+1. **Download the manifest** / 下载清单文件:
+   `https://Testiphi.github.io/excel_helper/manifest.xml`
+   (Save it as `manifest.xml` anywhere on your computer. / 保存到本地任意位置)
+2. **Upload it to Excel** / 在 Excel 中上传:
+   - Desktop: `Insert → Add-ins → My Add-ins → Upload My Add-in` → select `manifest.xml`
+   - 桌面版：`插入 → 加载项 → 我的加载项 → 上传我的加载项` → 选择 manifest.xml
+   - Web: `Insert → Add-ins → Upload My Add-in`（网页版：插入 → 加载项 → 上传我的加载项）
+3. **Use it** / 使用:
+   - Ribbon `Home → Locator → Open Locator` (or the "Cross-Locator" group), enter text in Row/Column search.
+   - 功能区 `开始 → Locator → Open Locator`，在行/列搜索中输入文本即可定位。
+   - Language toggle (中文/English) is in the task pane header. / 语言切换按钮在面板顶部。
 
-## 开发运行
+## Privacy / 隐私
+
+The task pane is a static page in your browser sandbox. It reads the active worksheet's used range and merged regions, and writes back only the cells you edit. **No data is uploaded anywhere.** 任务窗格是浏览器沙箱内的静态页面，只读取当前工作表的已用区域与合并区域，写回你编辑的单元格；**不向任何服务器上传数据**。
+
+## Develop / 开发
 
 ```bash
 npm install
-npm start        # 启动开发服务器并 sideload 到 Excel
+npm start        # dev server + sideload to Excel
+npm run build    # production build → dist/
 ```
 
-## 本机常驻（个人使用）
+Structure / 结构:
 
-- `open-excel-with-tool.bat`：确保本地服务就绪后打开 Excel（桌面快捷方式入口）
-- `auto-start-addin.bat`：本地服务启动脚本（端口 3000，已运行则跳过）
-- `create-shortcut.ps1`：重新生成桌面快捷方式
+```
+src/
+  types/      domain types
+  services/   excelService (Office.js) / filterEngine (pure locating logic)
+  hooks/      data loading & search state
+  components/ search panels, result grid, cell editor, etc.
+  i18n.tsx    zh/en translations
+```
 
-> 注意：以上脚本内含本机绝对路径，仅适用于当前机器。
+Deployment: pushing to `main` auto-builds and deploys `dist/` to GitHub Pages (`.github/workflows/deploy-pages.yml`). 推送 main 分支自动构建并部署到 GitHub Pages。
 
-## 打包部署
+## License / 许可
 
-`npm run build` 产物在 `dist/`；发布前需将 `webpack.config.js` 中的 `urlProd` 改为真实 HTTPS 托管地址。
+MIT — see [LICENSE](LICENSE).

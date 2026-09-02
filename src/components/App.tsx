@@ -10,6 +10,7 @@ import { useWorkbookData } from "../hooks/useWorkbookData";
 import { useSearch } from "../hooks/useSearch";
 import { setCellValue } from "../services/excelService";
 import { colToLetter, findMergedRegion } from "../services/filterEngine";
+import { useI18n } from "../i18n";
 import { EditingCell, GridCell } from "../types";
 
 const useStyles = makeStyles({
@@ -34,6 +35,7 @@ const useStyles = makeStyles({
  */
 const App: React.FC = () => {
   const styles = useStyles();
+  const { t } = useI18n();
   const { data, loading, error, reload } = useWorkbookData();
   const {
     rowQueries,
@@ -85,9 +87,11 @@ const App: React.FC = () => {
       editing.rowIndex - 1 === region.startRow &&
       editing.colIndex - 1 === region.startCol;
     if (isTopLeft) return undefined;
-    return `该单元格属于合并区域 ${colToLetter(region.startCol + 1)}${
-      region.startRow + 1
-    }:${colToLetter(region.endCol + 1)}${region.endRow + 1}，修改将写入左上角`;
+    return t("mergeNotice", {
+      range: `${colToLetter(region.startCol + 1)}${region.startRow + 1}:${colToLetter(
+        region.endCol + 1
+      )}${region.endRow + 1}`,
+    });
   };
 
   const handleSave = async (value: string | number | boolean) => {
@@ -112,7 +116,7 @@ const App: React.FC = () => {
         result={colResult}
         onChange={setColQueries}
       />
-      {error && <div className={styles.error}>加载失败: {error}</div>}
+      {error && <div className={styles.error}>{t("loadError", { msg: error })}</div>}
       <ResultGrid grid={grid} onEdit={handleEdit} />
       <StatusBar
         matchedRows={rowResult.indexes.length}

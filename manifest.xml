@@ -5,15 +5,15 @@
   xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="TaskPaneApp">
   <Id>05c2e1c9-3e1d-406e-9a91-e9ac64854143</Id>
   <Version>1.0.0.0</Version>
-  <ProviderName>Local Tool</ProviderName>
+  <ProviderName>Testiphi</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
-  <DisplayName DefaultValue="Excel 交叉定位"/>
-  <Description DefaultValue="通过行/列锚点搜索，快速定位并编辑 Excel 单元格"/>
+  <DisplayName DefaultValue="Excel Cross-Locator"/>
+  <Description DefaultValue="Locate and edit Excel cells by row/column anchor search"/>
   <IconUrl DefaultValue="https://localhost:3000/assets/icon-32.png"/>
   <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/icon-64.png"/>
   <SupportUrl DefaultValue="https://localhost:3000/"/>
   <AppDomains>
-    <AppDomain>https://localhost:3000</AppDomain>
+    <AppDomain>https://Testiphi.github.io</AppDomain>
   </AppDomains>
   <Hosts>
     <Host Name="Workbook"/>
@@ -75,13 +75,13 @@
         <bt:Url id="Taskpane.Url" DefaultValue="https://localhost:3000/taskpane.html" />
       </bt:Urls>
       <bt:ShortStrings>
-        <bt:String id="GetStarted.Title" DefaultValue="开始使用 Excel 交叉定位" />
-        <bt:String id="CommandsGroup.Label" DefaultValue="交叉定位" />
-        <bt:String id="TaskpaneButton.Label" DefaultValue="打开定位面板" />
+        <bt:String id="GetStarted.Title" DefaultValue="Get started with Excel Cross-Locator" />
+        <bt:String id="CommandsGroup.Label" DefaultValue="Locator" />
+        <bt:String id="TaskpaneButton.Label" DefaultValue="Open Locator" />
       </bt:ShortStrings>
       <bt:LongStrings>
-        <bt:String id="GetStarted.Description" DefaultValue="插件已加载。点击“打开定位面板”，在行/列搜索中输入文本即可定位并编辑单元格。" />
-        <bt:String id="TaskpaneButton.Tooltip" DefaultValue="打开交叉定位面板" />
+        <bt:String id="GetStarted.Description" DefaultValue="The add-in is loaded. Open the task pane, enter text in the row and column searches to locate and edit cells." />
+        <bt:String id="TaskpaneButton.Tooltip" DefaultValue="Open the cross-locator task pane" />
       </bt:LongStrings>
     </Resources>
   </VersionOverrides>

@@ -10,14 +10,13 @@ import {
 import { Add24Regular, Dismiss24Regular } from "@fluentui/react-icons";
 import { AxisSearchResult, SearchQuery } from "../types";
 import { colToLetter } from "../services/filterEngine";
+import { useI18n } from "../i18n";
 
 interface SearchPanelProps {
-  title: string;
+  dimension: "row" | "col";
   queries: SearchQuery[];
   result: AxisSearchResult;
   onChange: (queries: SearchQuery[]) => void;
-  /** 将轴索引（0-based）格式化为展示文本，如 "第3行" / "C列" */
-  matchLabel: (index: number, anchor: string) => string;
 }
 
 let nextQueryId = 0;
@@ -37,13 +36,14 @@ const useStyles = makeStyles({
  * 条件之间按 且/或 组合；下方展示当前匹配的轴索引列表，供用户确认。
  */
 const SearchPanel: React.FC<SearchPanelProps> = ({
-  title,
+  dimension,
   queries,
   result,
   onChange,
-  matchLabel,
 }) => {
   const styles = useStyles();
+  const { t } = useI18n();
+  const isRow = dimension === "row";
   const hasActive = queries.some((q) => q.value.trim() !== "");
 
   const update = (id: string, patch: Partial<SearchQuery>) => {
@@ -56,25 +56,39 @@ const SearchPanel: React.FC<SearchPanelProps> = ({
     onChange([...queries, newQuery()]);
   };
 
+  const matchLabel = (i: number, anchor: string) =>
+    isRow
+      ? t("rowLabel", {
+          row: i + 1,
+          anchor: anchor ? `(${anchor})` : "",
+        })
+      : t("colLabel", {
+          letter: colToLetter(i + 1),
+          anchor: anchor ? `(${anchor})` : "",
+        });
+
   const matchText =
     result.indexes.length > 0
-      ? `匹配 ${result.indexes.length} 项: ${result.indexes
-          .map((i) => matchLabel(i, result.anchors[i]))
-          .join("、")}`
+      ? t("matches", {
+          n: result.indexes.length,
+          list: result.indexes
+            .map((i) => matchLabel(i, result.anchors[i]))
+            .join(t("listSep")),
+        })
       : hasActive
-        ? "未匹配到任何内容"
-        : "输入文本，定位包含该内容的行/列";
+        ? t("noMatches")
+        : t("searchHint");
 
   return (
     <div className={styles.root}>
       <Text size={200} weight="semibold">
-        {title}
+        {t(isRow ? "rowSearch" : "colSearch")}
       </Text>
       {queries.map((q, idx) => (
         <div key={q.id} className={styles.row}>
           {idx > 0 && (
             <Dropdown
-              aria-label="逻辑关系"
+              aria-label="logic"
               value={q.logic}
               selectedOptions={[q.logic]}
               onOptionSelect={(_, d) =>
@@ -82,12 +96,12 @@ const SearchPanel: React.FC<SearchPanelProps> = ({
               }
               style={{ minWidth: "56px" }}
             >
-              <Option value="AND">且</Option>
-              <Option value="OR">或</Option>
+              <Option value="AND">{t("logicAnd")}</Option>
+              <Option value="OR">{t("logicOr")}</Option>
             </Dropdown>
           )}
           <Dropdown
-            aria-label="匹配方式"
+            aria-label="mode"
             value={q.mode}
             selectedOptions={[q.mode]}
             onOptionSelect={(_, d) =>
@@ -95,12 +109,12 @@ const SearchPanel: React.FC<SearchPanelProps> = ({
             }
             style={{ minWidth: "72px" }}
           >
-            <Option value="contains">包含</Option>
-            <Option value="exact">等于</Option>
+            <Option value="contains">{t("modeContains")}</Option>
+            <Option value="exact">{t("modeEquals")}</Option>
           </Dropdown>
           <Input
-            aria-label="搜索文本"
-            placeholder="输入文本"
+            aria-label="search"
+            placeholder={t("searchPlaceholder")}
             value={q.value}
             onChange={(_, d) => update(q.id, { value: d.value })}
             style={{ flex: 1 }}
@@ -109,7 +123,7 @@ const SearchPanel: React.FC<SearchPanelProps> = ({
             icon={<Dismiss24Regular />}
             size="small"
             appearance="subtle"
-            aria-label="删除条件"
+            aria-label={t("removeCondition")}
             onClick={() => remove(q.id)}
           />
         </div>
@@ -121,7 +135,7 @@ const SearchPanel: React.FC<SearchPanelProps> = ({
         appearance="outline"
         onClick={add}
       >
-        添加条件
+        {t("addCondition")}
       </Button>
       <Text size={200} className={styles.matchInfo}>
         {matchText}
@@ -130,15 +144,10 @@ const SearchPanel: React.FC<SearchPanelProps> = ({
   );
 };
 
-const rowLabel = (i: number, anchor: string) =>
-  `第${i + 1}行${anchor ? `(${anchor})` : ""}`;
-const colLabel = (i: number, anchor: string) =>
-  `${colToLetter(i + 1)}列${anchor ? `(${anchor})` : ""}`;
-
 export const RowSearch: React.FC<
-  Omit<SearchPanelProps, "title" | "matchLabel">
-> = (props) => <SearchPanel title="行搜索" matchLabel={rowLabel} {...props} />;
+  Omit<SearchPanelProps, "dimension">
+> = (props) => <SearchPanel dimension="row" {...props} />;
 
 export const ColumnSearch: React.FC<
-  Omit<SearchPanelProps, "title" | "matchLabel">
-> = (props) => <SearchPanel title="列搜索" matchLabel={colLabel} {...props} />;
+  Omit<SearchPanelProps, "dimension">
+> = (props) => <SearchPanel dimension="col" {...props} />;

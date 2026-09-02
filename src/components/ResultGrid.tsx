@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { makeStyles } from "@fluentui/react-components";
 import { GridCell } from "../types";
 import { colToLetter } from "../services/filterEngine";
+import { useI18n } from "../i18n";
 
 interface ResultGridProps {
   grid: GridCell[][];
@@ -53,6 +54,7 @@ const useStyles = makeStyles({
  */
 const ResultGrid: React.FC<ResultGridProps> = ({ grid, onEdit }) => {
   const styles = useStyles();
+  const { t } = useI18n();
   const rootRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState<{ r: number; c: number } | null>(null);
 
@@ -62,11 +64,7 @@ const ResultGrid: React.FC<ResultGridProps> = ({ grid, onEdit }) => {
   }, [grid]);
 
   if (grid.length === 0) {
-    return (
-      <div className={styles.empty}>
-        未定位：请在行搜索、列搜索中分别输入文本
-      </div>
-    );
+    return <div className={styles.empty}>{t("gridEmpty")}</div>;
   }
 
   const rows = grid.length;
@@ -122,7 +120,7 @@ const ResultGrid: React.FC<ResultGridProps> = ({ grid, onEdit }) => {
         <thead>
           <tr>
             <th className={styles.th} style={{ width: "48px" }}>
-              行号
+              {t("rowHeader")}
             </th>
             {grid[0].map((cell, i) => (
               <th key={i} className={styles.th}>
@@ -147,7 +145,7 @@ const ResultGrid: React.FC<ResultGridProps> = ({ grid, onEdit }) => {
                   className={`${styles.td}${
                     active?.r === i && active?.c === j ? ` ${styles.active}` : ""
                   }`}
-                  title="单击选中，双击或 Enter 编辑"
+                  title="Select / Edit"
                   onClick={() => select(i, j)}
                   onDoubleClick={() => onEdit(cell)}
                 >

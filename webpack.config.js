@@ -6,7 +6,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const webpack = require("webpack");
 
 const urlDev = "https://localhost:3000/";
-const urlProd = "https://www.contoso.com/"; // CHANGE THIS TO YOUR PRODUCTION DEPLOYMENT LOCATION
+const urlProd = "https://Testiphi.github.io/excel_helper/"; // GitHub Pages 部署地址
 
 async function getHttpsOptions() {
   const httpsOptions = await devCerts.getHttpsServerOptions();

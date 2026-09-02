@@ -14,10 +14,11 @@ import {
 } from "@fluentui/react-components";
 import { EditingCell } from "../types";
 import { colToLetter } from "../services/filterEngine";
+import { useI18n } from "../i18n";
 
 interface CellEditorProps {
   cell: EditingCell;
-  /** 合并区域等写回提示（可选） */
+  /** 合并区域等写回提示（可选，已按当前语言格式化） */
   notice?: string;
   onSave: (value: string | number | boolean) => void;
   onCancel: () => void;
@@ -37,6 +38,7 @@ const CellEditor: React.FC<CellEditorProps> = ({
   onCancel,
 }) => {
   const styles = useStyles();
+  const { t } = useI18n();
   const [value, setValue] = useState(
     cell.currentValue === null ? "" : String(cell.currentValue)
   );
@@ -63,14 +65,19 @@ const CellEditor: React.FC<CellEditorProps> = ({
       >
         <DialogBody>
           <DialogTitle>
-            编辑单元格 第{cell.rowIndex}行 {colToLetter(cell.colIndex)}列
+            {t("editTitle", {
+              row: cell.rowIndex,
+              col: colToLetter(cell.colIndex),
+            })}
           </DialogTitle>
           <DialogContent className={styles.meta}>
             <Text size={200} className={styles.metaText}>
-              原始值：
-              {cell.currentValue === null || cell.currentValue === undefined
-                ? "(空)"
-                : String(cell.currentValue)}
+              {t("originalValue", {
+                value:
+                  cell.currentValue === null || cell.currentValue === undefined
+                    ? t("emptyValue")
+                    : String(cell.currentValue),
+              })}
             </Text>
             {notice && (
               <Text size={200} className={styles.notice}>
@@ -80,17 +87,17 @@ const CellEditor: React.FC<CellEditorProps> = ({
             <Input
               value={value}
               onChange={(_, data) => setValue(data.value)}
-              placeholder="输入新值"
+              placeholder={t("newValuePlaceholder")}
               autoFocus
               onKeyDown={handleKeyDown}
             />
           </DialogContent>
           <DialogActions>
             <Button appearance="outline" onClick={onCancel}>
-              取消
+              {t("cancel")}
             </Button>
             <Button appearance="primary" onClick={save}>
-              保存
+              {t("save")}
             </Button>
           </DialogActions>
         </DialogBody>

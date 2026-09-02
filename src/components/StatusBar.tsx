@@ -2,6 +2,7 @@ import * as React from "react";
 import { Text, makeStyles } from "@fluentui/react-components";
 import { EditingCell } from "../types";
 import { colToLetter } from "../services/filterEngine";
+import { useI18n } from "../i18n";
 
 interface StatusBarProps {
   matchedRows: number;
@@ -29,16 +30,20 @@ const StatusBar: React.FC<StatusBarProps> = ({
   editing,
 }) => {
   const styles = useStyles();
+  const { t } = useI18n();
   return (
     <div className={styles.root}>
       <Text size={200} className={styles.text}>
-        匹配 {matchedRows} 行 × {matchedCols} 列
-        {mergedCount > 0 ? ` · 合并区域 ${mergedCount} 处` : ""}
+        {t("matched", { rows: matchedRows, cols: matchedCols })}
+        {mergedCount > 0 ? t("mergedCount", { n: mergedCount }) : ""}
       </Text>
       <Text size={200} className={styles.text}>
         {editing
-          ? `当前定位: 第 ${editing.rowIndex} 行 ${colToLetter(editing.colIndex)} 列`
-          : "未定位"}
+          ? t("currentCell", {
+              row: editing.rowIndex,
+              col: colToLetter(editing.colIndex),
+            })
+          : t("notLocated")}
       </Text>
     </div>
   );
