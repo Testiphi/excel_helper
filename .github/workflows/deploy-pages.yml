@@ -9,6 +9,7 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  administration: write # 启用 Pages 需要（configure-pages enablement）
 
 concurrency:
   group: pages
